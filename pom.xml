@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.ku</groupId>
 	<artifactId>KU-HAMS-auth-service</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>KU-HAMS-auth-service</name>
 	<description>KU-HAMS-auth-service</description>
 	<url/>
@@ -18,7 +18,11 @@
 		<license/>
 	</licenses>
 	<developers>
-		<developer/>
+		<developer>
+			<id>1</id>
+			<name>Pavucsan M</name>
+			<email>smpavucsan@gmail.com</email>
+		</developer>
 	</developers>
 	<scm>
 		<connection/>
@@ -58,6 +62,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>auth-service</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
