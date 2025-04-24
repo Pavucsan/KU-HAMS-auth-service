@@ -35,8 +35,8 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Invalid credentials");
         }
 
-        String token = jwtConfig.generateToken(user.getUsername()); // unified usage
-        Date expiryDate = jwtConfig.extractExpiration(token); // same util
+        String token = jwtConfig.generateToken(user.getUsername());
+        Date expiryDate = jwtConfig.extractExpiration(token);
 
         tokenStoreRepository.save(TokenStore.builder()
                 .token(token)
@@ -47,8 +47,9 @@ public class AuthServiceImpl implements AuthService {
                 .user(user)
                 .build());
 
-        return new AuthResponse(token);
+        return new AuthResponse(user.getId(), user.getUsername(), token);
     }
+
 
 
     @Override
