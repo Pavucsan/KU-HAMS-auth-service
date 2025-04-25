@@ -2,6 +2,9 @@ package com.ku.kuhamsauthservice.service.impl;
 
 
 import com.ku.kuhamsauthservice.config.security.JwtConfig;
+import com.ku.kuhamsauthservice.controller.AppointmentClient;
+import com.ku.kuhamsauthservice.dto.user.DoctorCreateRequest;
+import com.ku.kuhamsauthservice.dto.user.PatientCreateRequest;
 import com.ku.kuhamsauthservice.dto.user.request.AuthRequest;
 import com.ku.kuhamsauthservice.dto.user.response.AuthResponse;
 import com.ku.kuhamsauthservice.entity.TokenStore;
@@ -24,6 +27,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final TokenStoreRepository tokenStoreRepository;
     private final JwtConfig jwtConfig;
+    private final AppointmentClient appointmentClient;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
@@ -54,7 +58,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void register(AuthRequest request) {
-        if (userRepository.findByUsername(request.username()).isPresent()) {
+        /*if (userRepository.findByUsername(request.username()).isPresent()) {
             throw new RuntimeException("Username already exists");
         }
 
@@ -64,7 +68,34 @@ public class AuthServiceImpl implements AuthService {
                 .role("USER")
                 .build();
 
-        userRepository.save(user);
+        userRepository.save(user);*/
+
+        if (userRepository.existsByUsername(request.username())) {
+            throw new RuntimeException("Username already exists");
+        }
+        User saved = userRepository.save(new User(null, request.username(), passwordEncoder.encode(request.password()), request.role()));
+
+
+        if (saved.getRole().equals("DOCTOR")) {
+            appointmentClient.createDoctor(new DoctorCreateRequest(
+                    saved.getId(),
+                    saved.getUsername(),
+                    request.specialization(),
+                    request.phoneNumber(),
+                    request.email(),
+                    request.availabilityStart(),
+                    request.availabilityEnd()
+            ));
+        } else {
+            appointmentClient.createPatient(new PatientCreateRequest(
+                    saved.getId(),
+                    saved.getUsername(),
+                    request.dateOfBirth(),
+                    request.gender(),
+                    request.phoneNumber(),
+                    request.email()
+            ));
+        }
     }
 }
 

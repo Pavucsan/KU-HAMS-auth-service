@@ -15,3 +15,8 @@ spring:
 jwt:
   secret: JH76*jdKLMNOP&u23vbS89ui@LDK903sn
   expiration: 86400000  # 1 day in milliseconds
+
+appointment:
+  service:
+    url: http://localhost:8082
+
