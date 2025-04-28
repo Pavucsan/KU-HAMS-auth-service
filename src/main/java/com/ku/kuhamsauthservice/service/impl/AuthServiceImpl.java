@@ -7,12 +7,15 @@ import com.ku.kuhamsauthservice.dto.user.DoctorCreateRequest;
 import com.ku.kuhamsauthservice.dto.user.PatientCreateRequest;
 import com.ku.kuhamsauthservice.dto.user.request.AuthRequest;
 import com.ku.kuhamsauthservice.dto.user.response.AuthResponse;
+import com.ku.kuhamsauthservice.entity.Patient;
 import com.ku.kuhamsauthservice.entity.TokenStore;
 import com.ku.kuhamsauthservice.entity.User;
+import com.ku.kuhamsauthservice.repository.PatientRepository;
 import com.ku.kuhamsauthservice.repository.TokenStoreRepository;
 import com.ku.kuhamsauthservice.repository.UserRepository;
 import com.ku.kuhamsauthservice.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +31,7 @@ public class AuthServiceImpl implements AuthService {
     private final TokenStoreRepository tokenStoreRepository;
     private final JwtConfig jwtConfig;
     private final AppointmentClient appointmentClient;
+    private final PatientRepository patientRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
@@ -50,10 +54,16 @@ public class AuthServiceImpl implements AuthService {
                         .toLocalDateTime())
                 .user(user)
                 .build());
+        Long patientId = null;
+        System.out.println(user.getRole());
+        if ("PATIENT".equalsIgnoreCase(user.getRole())) { // Or whatever role field you have
+            Patient patient = patientRepository.findByUserId(user.getId())
+                    .orElseThrow(() -> new RuntimeException("Patient not found"));
+            patientId = patient.getId();
+        }
 
-        return new AuthResponse(user.getId(), user.getUsername(), token);
+        return new AuthResponse(user.getId(), user.getUsername(), token, patientId);
     }
-
 
 
     @Override
